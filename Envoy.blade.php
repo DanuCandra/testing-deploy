@@ -1,7 +1,7 @@
 @servers(['production' => ['root@203.194.113.123']])
  
 @setup
-    $repo = 'https://github.com/DanuCandra/test-dev.git';
+    $repo = 'https://github.com/DanuCandra/testing-deploy.git';
     $appDir = '/var/www';
     $branch = 'main';
 
