@@ -1,4 +1,4 @@
-name: deploy
+name: Deploy Laravel to VPS
 
 on: 
   push:
@@ -8,20 +8,31 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-            php-version: 8.3
-            tools: composer:v2
-            coverage: none
-      - name: Install Composer dependencies
-        run: composer update
+          php-version: 8.3
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Cache Laravel Configurations
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan optimize
+
       - name: Setup SSH
         uses: kielabokkie/ssh-key-and-known-hosts-action@v1.2.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
-      - name: Deploy Environment
+
+      - name: Deploy with Laravel Envoy
         run: ./vendor/bin/envoy run deploy

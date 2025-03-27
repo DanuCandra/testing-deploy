@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h1>testing lewat github lagi hehehe</h1>
+    <h1>testing lewat github gpt</h1>
 </body>
 
 </html>
