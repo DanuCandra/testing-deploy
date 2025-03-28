@@ -1,5 +1,7 @@
 SETUP VPS LARAVEL CI CD
+
 composer require laravel/envoy --dev
+
 php vendor/bin/envoy run deploy
 
 SERVER PREPARATION
