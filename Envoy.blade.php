@@ -2,7 +2,7 @@
  
 @setup
     $repo = 'https://github.com/DanuCandra/testing-deploy.git';
-    $appDir = '/var/www';
+    $appDir = '/var/www/crm-staging.server-danu.cloud';
     $branch = 'main';
 
     date_default_timezone_set('Asia/Jakarta');
