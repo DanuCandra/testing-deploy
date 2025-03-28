@@ -97,6 +97,54 @@ systemctl restart nginx
 
 ---
 
+## Install dan Konfigurasi phpMyAdmin dengan Nginx
+### Install phpMyAdmin
+```sh
+apt install -y phpmyadmin
+```
+### Konfigurasi phpMyAdmin di Nginx
+Buat konfigurasi baru untuk phpMyAdmin:
+```sh
+nano /etc/nginx/sites-available/phpmyadmin
+```
+Tambahkan konfigurasi berikut:
+```nginx
+server {
+    listen 80;
+    server_name db.server-danu.cloud;
+    root /usr/share/phpmyadmin;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```
+Simpan file dan buat symlink ke `sites-enabled`:
+```sh
+ln -s /etc/nginx/sites-available/phpmyadmin /etc/nginx/sites-enabled/
+```
+Restart Nginx:
+```sh
+systemctl restart nginx
+```
+Sekarang phpMyAdmin dapat diakses melalui `http://db.server-danu.cloud`.
+
+---
+
+
+
 ## Persiapan Sebelum Deployment
 Buat direktori yang dibutuhkan:
 ```sh
