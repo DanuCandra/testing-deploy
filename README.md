@@ -22,7 +22,8 @@ install php
 
 install composer
 1.	buat shell file install-composer.sh = nano install-composer.sh
-#!/bin/sh
+   
+   #!/bin/sh
 
 EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -39,9 +40,10 @@ php composer-setup.php --quiet
 RESULT=$?
 rm composer-setup.php
 exit $RESULT
-2. chmod +x install-composer.sh
-3. run ./install-composer.sh
-4. mv composer.phar /usr/bin/composer
+
+3. chmod +x install-composer.sh
+4. run ./install-composer.sh
+5. mv composer.phar /usr/bin/composer
 
 
 apt install mysql-server
@@ -198,3 +200,44 @@ Proses Deployment
 1. jalankan perintah ./vendor/bin/envoy run deploy
 2. generate app key dengan menjalankan perintah php artisan key:generate di folder /var/www/source
 3. penyesuaian folder permission dengan perintah chown -R www-data: /var/www/
+
+
+MENGGUANAKAN GITHUB ACTION
+- buka repository menu settings -> secrets -> menu
+- tambahkan secret baru SSH_PRIVATE_KEY value nya ambdil dari private key
+- private key dilocal bisa lihat file ini cat ~/.ssh/id_rsa
+- tambahkan secret baru SSH_HOST value nya isi alamat ip server
+- tambahkan deploy keys dengan menggunakan public key (optional)
+- public key dilocal bisa lihat file ini cat ~/.ssh/id_rsa.pub
+- private key / public key jika belum ada, bisa generate secara manual dengan perintah ssh-keygen lalu enter sampai selesai
+- buat folder baru .github/workflows di laravel app root dir
+- buat file baru deploy.yml di workflows folder
+- edit file deploy.yml tambahkan ini:
+name: deploy
+
+on: 
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+            php-version: 8.3
+            tools: composer:v2
+            coverage: none
+      - name: Install Composer dependencies
+        run: composer update
+      - name: Setup SSH
+        uses: kielabokkie/ssh-key-and-known-hosts-action@v1.2.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-host: ${{ secrets.SSH_HOST }}
+      - name: Deploy Environment
+        run: ./vendor/bin/envoy run deploy
+
