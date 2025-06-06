@@ -277,6 +277,7 @@ Buat file `Envoy.blade.php` di root proyek Laravel:
 ./vendor/bin/envoy run deploy
 php artisan key:generate
 chown -R www-data: /var/www/
+sudo chown -R www-data:www-data storage bootstrap/cache
 ```
 
 ---
